@@ -78,6 +78,10 @@ app.get("/divide/:a/:b", async (req, res) => {
 //   res.json(rows);
 // });
 
-initDb().then(() => {
-  app.listen(8000, () => console.log("Calculatrice API démarrée sur le port 8000"));
+// initDb().then(() => {
+//   app.listen(8000, () => console.log("Calculatrice API démarrée sur le port 8000"));
+// });
+
+app.listen(8000, () => {
+  console.log(`Server running on http://localhost:8000`);
 });
