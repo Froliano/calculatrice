@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Calculatrice</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 32px;
+      padding: 48px 24px;
+    }
+
+    .card {
+      background: #16213e;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    h1 { font-size: 1.5rem; margin-bottom: 24px; color: #e94560; }
+    h2 { font-size: 1.1rem; margin-bottom: 16px; color: #e94560; }
+
+    .inputs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 110px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #0f3460;
+      background: #0f3460;
+      color: #eee;
+      font-size: 1.1rem;
+      outline: none;
+    }
+
+    input:focus { border-color: #e94560; }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: #e94560;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #c73652; }
+
+    .result {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: bold;
+      min-height: 48px;
+      color: #fff;
+    }
+
+    .error { color: #e94560; font-size: 1rem; }
+
+    .history-card { width: 320px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 6px 8px;
+      border-bottom: 1px solid #0f3460;
+      color: #aaa;
+    }
+
+    td { padding: 8px; border-bottom: 1px solid #0f3460; }
+
+    tr:last-child td { border-bottom: none; }
+
+    .op { text-transform: uppercase; font-weight: bold; color: #e94560; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Calculatrice</h1>
+  <div class="inputs">
+    <input id="a" type="number" placeholder="A" />
+    <input id="b" type="number" placeholder="B" />
+  </div>
+  <div class="buttons">
+    <button onclick="calculate('add')">Addition</button>
+    <button onclick="calculate('subtract')">Soustraction</button>
+    <button onclick="calculate('multiply')">Multiplication</button>
+    <button onclick="calculate('divide')">Division</button>
+  </div>
+  <div class="result" id="result">—</div>
+</div>
+
+<div class="card history-card">
+  <h2>Historique</h2>
+  <table>
+    <thead>
+      <tr><th>Op.</th><th>A</th><th>B</th><th>Résultat</th></tr>
+    </thead>
+    <tbody id="history"></tbody>
+  </table>
+</div>
+
+<script>
+  const API = "http://localhost:8000";
+
+  const symbols = { add: "+", subtract: "−", multiply: "×", divide: "÷" };
+
+  async function calculate(op) {
+    const a = document.getElementById("a").value;
+    const b = document.getElementById("b").value;
+    const resultEl = document.getElementById("result");
+
+    if (a === "" || b === "") {
+      resultEl.innerHTML = '<span class="error">Remplis A et B</span>';
+      return;
+    }
+
+    const res = await fetch(`${API}/${op}/${a}/${b}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      resultEl.innerHTML = `<span class="error">${data.error}</span>`;
+      return;
+    }
+
+    resultEl.textContent = data.result;
+    loadHistory();
+  }
+
+  async function loadHistory() {
+    const res = await fetch(`${API}/history`);
+    const rows = await res.json();
+    document.getElementById("history").innerHTML = rows.map(r => `
+      <tr>
+        <td class="op">${symbols[r.operation]}</td>
+        <td>${r.a}</td>
+        <td>${r.b}</td>
+        <td>${r.result}</td>
+      </tr>
+    `).join("");
+  }
+
+  loadHistory();
+</script>
+</body>
+</html>
