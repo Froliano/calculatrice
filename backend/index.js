@@ -78,9 +78,6 @@ app.get("/history", async (req, res) => {
   res.json(rows);
 });
 
-// initDb().then(() => {
-//   app.listen(8000, () => console.log("Calculatrice API démarrée sur le port 8000"));
-// });
-initDb();
-
-module.exports = app;
+initDb().then(() => {
+  app.listen(8000, () => console.log("Calculatrice API démarrée sur le port 8000"));
+});
