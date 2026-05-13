@@ -27,5 +27,19 @@ services:
     depends_on:
       - backend
 
+  test-js:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.test
+    profiles: ["test"]
+
+  test-python:
+    build: ./tests
+    environment:
+      - BASE_URL=http://backend:8000
+    depends_on:
+      - backend
+    profiles: ["test"]
+
 volumes:
   db_data:
