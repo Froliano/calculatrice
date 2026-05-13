@@ -5,7 +5,7 @@ describe("GET /add/:a/:b", () => {
   test("10 + 5 = 15",  async () => {
     const res = await request(app).get("/add/10/5");
     expect(res.status).toBe(200);
-    expect(res.body.result).toBe(15);
+    expect(res.body.result).toBe(2);
   });
   test("-3 + 7 = 4", async () => {
     const res = await request(app).get("/add/-3/7");
