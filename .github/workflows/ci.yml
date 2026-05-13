@@ -65,4 +65,4 @@ jobs:
           BASE_URL: http://localhost:8000
         run: |
           cd tests
-          python -m pytest test_api.py -v
+          python -m pytest test_calculator.py -v
